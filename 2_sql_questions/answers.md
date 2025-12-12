@@ -69,4 +69,26 @@ The most commonly used join keys across Rfam tables are:
 
 These columns form the backbone of the schema and allow querying relationships between sequences, families, taxonomy, genomes, and motifs.
 
+### 3. Which type of rice has the longest DNA sequence? (hint: use the rfamseq and the taxonomy tables)
 
+To determine which rice species has the longest DNA sequence, we need to join:
+
+- `rfamseq` → contains sequence lengths (`length`) and taxonomy reference (`taxid`)
+- `taxonomy` → contains species names (`species`, `tax_string`)
+
+We filter for rice by matching `"Oryza"` in the taxonomy.
+
+**SQL Query**
+
+```sql
+SELECT
+    t.species AS rice_species,
+    MAX(r.length) AS longest_sequence_length
+FROM rfamseq r
+JOIN taxonomy t
+    ON r.taxid = t.ncbi_id
+WHERE t.tax_string LIKE '%Oryza%'
+GROUP BY t.species
+ORDER BY longest_sequence_length DESC
+LIMIT 1;
+```
