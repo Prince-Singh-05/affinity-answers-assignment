@@ -1,17 +1,19 @@
-import requests
+import cloudscraper
 from bs4 import BeautifulSoup
 from prettytable import PrettyTable
 
-URL = "https://www.olx.in/items/q-car-cover?isSearchCall=true"
+url = "https://www.olx.in/items/q-car-cover?isSearchCall=true"
 
-headers = {
-    "User-Agent": "Mozilla/5.0"
-}
+scraper = cloudscraper.create_scraper()  # handles Cloudflare
 
-print("Starting scraper...")
+print("Starting scrapper...")
 
-res = requests.get(URL, headers=headers)
-print("response code - ", res.status_code)
+try:
+    res = scraper.get(url, timeout=10)
+    print("res -", res.status_code)
+except Exception as e:
+    print("Request failed:", e)
+    exit()
 
 soup = BeautifulSoup(res.text, "html.parser")
 
