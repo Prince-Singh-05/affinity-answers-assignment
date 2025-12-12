@@ -8,18 +8,27 @@ headers = {
     "User-Agent": "Mozilla/5.0"
 }
 
+print("Starting scraper...")
+
 res = requests.get(URL, headers=headers)
+print("response code - ", res.status_code)
+
 soup = BeautifulSoup(res.text, "html.parser")
 
-items = soup.select("li.EIR5N")  # class used for listings
+items = soup.select('li[data-aut-id="itemBox3"]')  # class used for listings
+print("Total items found:", len(items))
 
-table = PrettyTable(["Title", "Description", "Price"])
+table = PrettyTable(["Title", "Price", "Location"])
 
 for item in items:
-    title = item.select_one("span._2tW1I").get_text(strip=True) if item.select_one("span._2tW1I") else "N/A"
-    desc = item.select_one("span._2Tvws").get_text(strip=True) if item.select_one("span._2Tvws") else "N/A"
-    price = item.select_one("span._89yzn").get_text(strip=True) if item.select_one("span._89yzn") else "N/A"
+    title = item.select_one('span[data-aut-id="itemTitle"]')
+    price = item.select_one('span[data-aut-id="itemPrice"]')
+    location = item.select_one('span[data-aut-id="item-location"]')
 
-    table.add_row([title, desc, price])
+    table.add_row([
+        title.get_text(strip=True) if title else "N/A",
+        price.get_text(strip=True) if price else "N/A",
+        location.get_text(strip=True) if location else "N/A",
+    ])
 
 print(table)
