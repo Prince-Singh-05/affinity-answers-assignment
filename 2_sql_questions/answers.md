@@ -92,3 +92,23 @@ GROUP BY t.species
 ORDER BY longest_sequence_length DESC
 LIMIT 1;
 ```
+
+### 4. We want to paginate a list of the family names and their longest DNA sequence lengths (in descending order of length) where only families that have DNA sequence lengths greater than 1,000,000 are included. Give a query that will return the 9th page when there are 15 results per page. (hint: we need the family accession ID, family name and the maximum length in the results)
+
+**SQL Query**
+
+```sql
+SELECT
+    f.rfam_acc,
+    f.rfam_id,
+    MAX(rs.length) AS max_length
+FROM family f
+JOIN full_region fr
+    ON f.rfam_acc = fr.rfam_acc
+JOIN rfamseq rs
+    ON fr.rfamseq_acc = rs.rfamseq_acc
+GROUP BY f.rfam_acc, f.rfam_id
+HAVING max_length > 1000000
+ORDER BY max_length DESC
+LIMIT 15 OFFSET 120;
+```
